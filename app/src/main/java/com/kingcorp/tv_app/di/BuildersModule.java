@@ -1,6 +1,9 @@
 package com.kingcorp.tv_app.di;
 
+import com.kingcorp.tv_app.presentation.view.MainActivity;
+
 import dagger.Module;
+import dagger.android.ContributesAndroidInjector;
 
 /**
  * Привязывает все субкомпоненты внутри приложения
@@ -8,11 +11,9 @@ import dagger.Module;
 @Module
 public abstract class BuildersModule {
 
-    /*
-        Шаблон добавления субкомпонентов
-        @ActivityScope
-        @ContributesAndroidInjector(module = ActivityModule.class)
-        abstract Activity bindActivity();
-     */
+    @MainActivityScope
+    @ContributesAndroidInjector(modules = MainActivityModule.class)
+    abstract MainActivity bindMainActivity();
+
 
 }
