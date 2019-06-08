@@ -1,5 +1,8 @@
 package com.kingcorp.tv_app.presentation.view;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,8 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.domain.entity.ChannelEntity;
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     }
 
     private void initNavigationView() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -88,27 +94,32 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //TODO: Navigation panel
+        switch (id) {
+            case R.id.nav_profile:
+                startActivity(new Intent(this, ProfileActivity.class));
+                break;
+            case R.id.nav_off_ads:
+                break;
+            case R.id.nav_rate:
+                // TODO: Add app URI
+                Uri appUri = null;
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, appUri);
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                        (Build.VERSION.SDK_INT >= 21
+                                ? Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                                : Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                break;
+            case R.id.nav_policy:
+
+                break;
+            case R.id.nav_about:
+
+                break;
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
