@@ -120,7 +120,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccentText"
+                android:textColor="@color/colorSecondAccent"
                 android:textSize="20sp"
                 android:theme="@style/MyRadioButton"
                 android:fontFamily="@font/roboto_light"
@@ -128,7 +128,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccentText"
+                android:textColor="@color/colorSecondAccent"
                 android:textSize="20sp"
                 android:theme="@style/MyRadioButton"
                 android:fontFamily="@font/roboto_light"
@@ -136,7 +136,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorAccentText"
+                android:textColor="@color/colorSecondAccent"
                 android:textSize="20sp"
                 android:theme="@style/MyRadioButton"
                 android:fontFamily="@font/roboto_light"

@@ -1,9 +1,30 @@
 package com.kingcorp.tv_app.domain.entity;
 
-public class ChannelEntity {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ChannelEntity implements Parcelable {
     private String name;
     private String url;
     private String img;
+
+    protected ChannelEntity(Parcel in) {
+        name = in.readString();
+        url = in.readString();
+        img = in.readString();
+    }
+
+    public static final Creator<ChannelEntity> CREATOR = new Creator<ChannelEntity>() {
+        @Override
+        public ChannelEntity createFromParcel(Parcel in) {
+            return new ChannelEntity(in);
+        }
+
+        @Override
+        public ChannelEntity[] newArray(int size) {
+            return new ChannelEntity[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -27,5 +48,17 @@ public class ChannelEntity {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeString(url);
+        parcel.writeString(img);
     }
 }

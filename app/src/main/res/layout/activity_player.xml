@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/video_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <SurfaceView
+            android:id="@+id/player_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/control_panel"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:background="@android:color/black"
+                android:alpha="0.6"
+                app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/channel_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/perviy_icon"/>
+                <TextView
+                    android:id="@+id/channel_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto_light"
+                    android:textColor="@android:color/white"
+                    android:text="Первый канал"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_horizontal"
+                android:background="@android:color/black"
+                android:alpha="0.6"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <ImageView
+                    android:id="@+id/play_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="4dp"
+                    app:srcCompat="@drawable/ic_play_btn"/>
+                <ImageView
+                    android:id="@+id/mute_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="4dp"
+                    android:layout_marginStart="32dp"
+                    app:srcCompat="@drawable/ic_mute_btn"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/next_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:srcCompat="@drawable/ic_next_btn"/>
+
+            <ImageView
+                android:id="@+id/prev_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:srcCompat="@drawable/ic_prev_btn"/>
+
+        </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
