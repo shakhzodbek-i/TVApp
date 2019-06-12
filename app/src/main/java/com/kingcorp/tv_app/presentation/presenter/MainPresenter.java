@@ -1,7 +1,7 @@
 package com.kingcorp.tv_app.presentation.presenter;
 
-import android.view.View;
+import com.kingcorp.tv_app.presentation.listener.MainActivityListener;
 
-public interface MainPresenter extends View.OnClickListener {
+public interface MainPresenter extends MainActivityListener {
     void loadChannels();
 }

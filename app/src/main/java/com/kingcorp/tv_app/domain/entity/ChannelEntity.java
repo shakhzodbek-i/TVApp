@@ -4,9 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ChannelEntity implements Parcelable {
-    private String name;
-    private String url;
-    private String img;
+    @JsonProperty("id") int id;
+    @JsonProperty("name") String name;
+    @JsonProperty("icon") String url;
+    @JsonProperty("link") String img;
 
     protected ChannelEntity(Parcel in) {
         name = in.readString();

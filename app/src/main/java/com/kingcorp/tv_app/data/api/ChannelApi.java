@@ -1,12 +1,14 @@
 package com.kingcorp.tv_app.data.api;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.http.POST;
-import retrofit2.http.Streaming;
+import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+
+import java.util.List;
+
+import io.reactivex.Single;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface ChannelApi {
-    @POST("?toall")
-    @Streaming
-    Call<ResponseBody> downloadChannelList();
+    @GET("api.php?lang={lang}")
+    Single<List<ChannelEntity>> loadChannelsList(@Path("lang") String lang);
 }
