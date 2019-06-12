@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.kingcorp.tv_app.R;
+import com.kingcorp.tv_app.data.SharedPreferencesHelper;
 import com.kingcorp.tv_app.domain.entity.ChannelEntity;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.adapters.ChannelsAdapter;
@@ -34,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     @Inject
     ChannelRepository mRepository;
 
+    @Inject
+    SharedPreferencesHelper mSharedPreferencesHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         mChannelsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        mPresenter = new MainPresenterImpl(this, mRepository);
+        mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
     }
 
     @Override
@@ -60,7 +64,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
     @Override
     public void openChannel(ChannelEntity channel) {
-        //TODO: Open channel in player
+//        Intent intent = new Intent(this, PlayerActivity.class);
+//
+//        intent.putExtra(Constants.);
     }
 
     private void initNavigationView() {

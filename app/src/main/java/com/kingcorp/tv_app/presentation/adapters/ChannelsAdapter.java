@@ -11,15 +11,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.presentation.listener.MainActivityListener;
 
 import java.util.List;
 
 public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ChannelViewHolder> {
 
     private List<ChannelEntity> mChannels;
-    private View.OnClickListener mListener;
+    private MainActivityListener mListener;
 
-    public ChannelsAdapter(List<ChannelEntity> channels, View.OnClickListener listener) {
+    public ChannelsAdapter(List<ChannelEntity> channels, MainActivityListener listener) {
         this.mChannels = channels;
         this.mListener = listener;
     }
@@ -36,7 +37,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
     @Override
     public void onBindViewHolder(@NonNull ChannelViewHolder viewHolder, int i) {
         ChannelEntity channel = mChannels.get(i);
-        viewHolder.bind(channel.getName(), channel.getUrl(), mListener);
+        viewHolder.bind(channel, mListener);
     }
 
     @Override
@@ -55,12 +56,12 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
             channelImg = itemView.findViewById(R.id.channel_img);
         }
 
-        void bind(String name, String imgUrl, View.OnClickListener listener) {
-            itemView.setOnClickListener(listener);
-            channelName.setText(name);
+        void bind(ChannelEntity channel, MainActivityListener listener) {
+            itemView.setOnClickListener(view -> listener.onChannelClick(channel));
+            channelName.setText(channel.getName());
 
             Glide.with(itemView)
-                    .load(imgUrl)
+                    .load(channel.getUrl())
                     .into(channelImg);
         }
     }

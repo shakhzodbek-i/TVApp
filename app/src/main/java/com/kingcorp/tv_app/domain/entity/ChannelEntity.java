@@ -1,9 +1,20 @@
 package com.kingcorp.tv_app.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ChannelEntity {
-    private String name;
-    private String url;
-    private String img;
+    @JsonProperty("id") int id;
+    @JsonProperty("name") String name;
+    @JsonProperty("icon") String url;
+    @JsonProperty("link") String img;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
