@@ -8,7 +8,7 @@ import android.view.SurfaceHolder;
 import android.view.View;
 
 import com.kingcorp.tv_app.R;
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.presentation.view.PlayerView;
 
 import java.io.IOException;
@@ -17,9 +17,9 @@ import java.util.List;
 public class PlayerPresenterImpl
         implements PlayerPresenter, SurfaceHolder.Callback {
 
-    private ChannelEntity mCurrentChannel;
+    private Channel mCurrentChannel;
     private int mCurrentChannelIndex;
-    private List<ChannelEntity> mChannelsList;
+    private List<Channel> mChannelsList;
     private MediaPlayer mPlayer;
     private SurfaceHolder mHolder;
     private PlayerView mView;
@@ -28,7 +28,7 @@ public class PlayerPresenterImpl
 //    private final String testUrl = "http://persik.tv/stream/9557/401338/46.m3u8";
 //    private final String testNextUrl = "http://video-4-206.rutube.ru/stream/10113616/546602986e6a424d74d594876ddb3f04/tracks-v1a1/mono.m3u8";
 
-    public PlayerPresenterImpl(PlayerView view, SurfaceHolder holder, List<ChannelEntity> channelsList, int currentChannelIndex) {
+    public PlayerPresenterImpl(PlayerView view, SurfaceHolder holder, List<Channel> channelsList, int currentChannelIndex) {
         this.mView = view;
         this.mHolder = holder;
         this.mChannelsList = channelsList;
@@ -104,7 +104,7 @@ public class PlayerPresenterImpl
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.setScreenOnWhilePlaying(true);
             try {
-                mPlayer.setDataSource(mCurrentChannel.getUrl());
+                mPlayer.setDataSource(mCurrentChannel.getLink());
                 mPlayer.setOnPreparedListener(mediaPlayer -> {
                     mediaPlayer.start();
                     mView.hideProgressBar();
@@ -122,7 +122,7 @@ public class PlayerPresenterImpl
                         mediaPlayer.pause();
                         mView.showNoInternetConnection(mCurrentChannel);
                     } else if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-                        changeChannel(mCurrentChannel.getUrl());
+                        changeChannel(mCurrentChannel.getLink());
                     }
                     return true;
                 });
@@ -150,14 +150,14 @@ public class PlayerPresenterImpl
             case R.id.next_btn:
                 if ((mCurrentChannelIndex+1) < mChannelsList.size()){
                     mCurrentChannel = mChannelsList.get(++mCurrentChannelIndex);
-                    changeChannel(mCurrentChannel.getUrl());
+                    changeChannel(mCurrentChannel.getLink());
                     mView.setChannelMetadata(mCurrentChannel);
                 }
                 break;
             case R.id.prev_btn:
                 if ((mCurrentChannelIndex-1) >= 0){
                     mCurrentChannel = mChannelsList.get(--mCurrentChannelIndex);
-                    changeChannel(mCurrentChannel.getUrl());
+                    changeChannel(mCurrentChannel.getLink());
                     mView.setChannelMetadata(mCurrentChannel);
                 }
                 break;
@@ -187,7 +187,7 @@ public class PlayerPresenterImpl
     @Override
     public void restart(){
         if (mPlayer != null && !mPlayer.isPlaying()) {
-            changeChannel(mCurrentChannel.getUrl());
+            changeChannel(mCurrentChannel.getLink());
         }
     }
 

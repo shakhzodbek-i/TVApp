@@ -2,10 +2,11 @@ package com.kingcorp.tv_app.presentation.presenter;
 
 import com.kingcorp.tv_app.data.Constants;
 import com.kingcorp.tv_app.data.SharedPreferencesHelper;
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.view.MainView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -20,7 +21,7 @@ public class MainPresenterImpl implements MainPresenter {
     private final CompositeDisposable mCompositeDisposable;
 
     private String mRegion;
-    private List<ChannelEntity> mChannelsList;
+    private List<Channel> mChannelsList;
 
     public MainPresenterImpl(MainView mView, ChannelRepository repository, SharedPreferencesHelper sharedPreferencesHelper) {
         this.mView = mView;
@@ -28,7 +29,9 @@ public class MainPresenterImpl implements MainPresenter {
         this.mSharedPreferencesHelper = sharedPreferencesHelper;
         this.mCompositeDisposable = new CompositeDisposable();
 
-        mRegion = mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY);
+        mRegion = mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY) == null
+                ? "ru"
+                : mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY);
         loadChannels();
     }
 
@@ -41,12 +44,10 @@ public class MainPresenterImpl implements MainPresenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 response -> {
-                                    mChannelsList = response;
+                                    mChannelsList = response.channels;
                                     mView.showChannels(mChannelsList);
                                 },
-                                throwable -> {
-
-                                }
+                                Throwable::printStackTrace
                         )
         );
 
@@ -54,7 +55,7 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void onChannelClick(ChannelEntity currentChannel) {
-        mView.openChannel(currentChannel);
+    public void onChannelClick(Channel currentChannel) {
+        mView.openChannel(currentChannel, new ArrayList<>(mChannelsList));
     }
 }

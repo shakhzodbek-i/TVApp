@@ -1,11 +1,12 @@
 package com.kingcorp.tv_app.presentation.view;
 
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface MainView {
-    void showChannels(List<ChannelEntity> channels);
+    void showChannels(List<Channel> channels);
 
-    void openChannel(ChannelEntity channel);
+    void openChannel(Channel channel, ArrayList<Channel> channels);
 }

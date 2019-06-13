@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.data.Constants;
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.presentation.presenter.PlayerPresenter;
 import com.kingcorp.tv_app.presentation.presenter.PlayerPresenterImpl;
 
@@ -43,7 +43,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
 
     private SurfaceHolder mSurfaceHolder;
     private PlayerPresenter mPresenter;
-    private ArrayList<ChannelEntity> mChannelsList;
+    private ArrayList<Channel> mChannelsList;
     private int mCurrentChannelIndex;
 
     @Override
@@ -139,23 +139,23 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
     }
 
     @Override
-    public void showNoInternetConnection(ChannelEntity currentChannel) {
+    public void showNoInternetConnection(Channel currentChannel) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder
                 .setTitle("No Internet Connection.")
                 .setMessage("Application cannot connect to server, please check Internet connection and try again!")
                 .setPositiveButton("Try again!", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
-                    mPresenter.changeChannel(currentChannel.getUrl());
+                    mPresenter.changeChannel(currentChannel.getLink());
                 });
         dialogBuilder.show();
     }
 
     @Override
-    public void setChannelMetadata(ChannelEntity entity) {
+    public void setChannelMetadata(Channel entity) {
         Glide
                 .with(this)
-                .load(Uri.parse(entity.getImg()))
+                .load(Uri.parse(entity.getIcon()))
                 .placeholder(R.mipmap.ic_launcher_foreground)
                 .into(mChannelIcon);
 

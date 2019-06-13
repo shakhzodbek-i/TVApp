@@ -1,11 +1,9 @@
 package com.kingcorp.tv_app.domain.repository;
 
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channels;
 
-import java.util.List;
-
-import io.reactivex.Single;
+import io.reactivex.Observable;
 
 public interface ChannelRepository {
-    Single<List<ChannelEntity>> loadChannels(String region);
+    Observable<Channels> loadChannels(String region);
 }

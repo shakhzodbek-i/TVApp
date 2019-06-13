@@ -2,7 +2,7 @@ package com.kingcorp.tv_app.presentation.view;
 
 import android.media.AudioManager;
 
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 
 public interface PlayerView {
     void setPlayButtonIcon(boolean isPaused);
@@ -13,9 +13,9 @@ public interface PlayerView {
 
     void hideProgressBar();
 
-    void showNoInternetConnection(ChannelEntity currentChannel);
+    void showNoInternetConnection(Channel currentChannel);
 
-    void setChannelMetadata(ChannelEntity entity);
+    void setChannelMetadata(Channel entity);
 
     AudioManager getAudioManager();
 }

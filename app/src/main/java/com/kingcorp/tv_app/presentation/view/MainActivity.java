@@ -16,13 +16,15 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.kingcorp.tv_app.R;
+import com.kingcorp.tv_app.data.Constants;
 import com.kingcorp.tv_app.data.SharedPreferencesHelper;
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.adapters.ChannelsAdapter;
 import com.kingcorp.tv_app.presentation.presenter.MainPresenter;
 import com.kingcorp.tv_app.presentation.presenter.MainPresenterImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     }
 
     @Override
-    public void showChannels(List<ChannelEntity> channels) {
+    public void showChannels(List<Channel> channels) {
 
         mAdapter = new ChannelsAdapter(channels, mPresenter);
 
@@ -66,10 +68,12 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     }
 
     @Override
-    public void openChannel(ChannelEntity channel) {
-//        Intent intent = new Intent(this, PlayerActivity.class);
-//
-//        intent.putExtra(Constants.);
+    public void openChannel(Channel channel, ArrayList<Channel> channelList) {
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putParcelableArrayListExtra(Constants.CHANNEL_LIST_EXTRA_KEY, channelList);
+        intent.putExtra(Constants.CHANNEL_INDEX_EXTRA_KEY, channelList.indexOf(channel));
+
+        startActivity(intent);
     }
 
     private void initNavigationView() {

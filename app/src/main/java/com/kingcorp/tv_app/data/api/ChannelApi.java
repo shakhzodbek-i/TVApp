@@ -1,14 +1,12 @@
 package com.kingcorp.tv_app.data.api;
 
-import com.kingcorp.tv_app.domain.entity.ChannelEntity;
+import com.kingcorp.tv_app.domain.entity.Channels;
 
-import java.util.List;
-
-import io.reactivex.Single;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
+import io.reactivex.Observable;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ChannelApi {
-    @GET("api.php?lang={lang}")
-    Single<List<ChannelEntity>> loadChannelsList(@Path("lang") String lang);
+    @POST("/api.php")
+    Observable<Channels> loadChannelsList(@Query("lang") String lang);
 }
