@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/nav_profile"
-            android:title="@string/nav_profile_settings" />
-        <item
             android:id="@+id/nav_off_ads"
             android:icon="@drawable/nav_off_ads"
             android:title="@string/nav_off_ad" />

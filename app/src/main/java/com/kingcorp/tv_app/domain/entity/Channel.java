@@ -19,25 +19,28 @@ public class Channel implements Parcelable {
     @JsonProperty("link")
     private String link;
 
-    public final static Parcelable.Creator<Channel> CREATOR = new Creator<Channel>() {
+    public Channel() {
+    }
 
+    protected Channel(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        category = in.readString();
+        icon = in.readString();
+        link = in.readString();
+    }
+
+    public static final Creator<Channel> CREATOR = new Creator<Channel>() {
+        @Override
         public Channel createFromParcel(Parcel in) {
             return new Channel(in);
         }
 
+        @Override
         public Channel[] newArray(int size) {
-            return (new Channel[size]);
+            return new Channel[size];
         }
-
     };
-
-    protected Channel(Parcel in) {
-        this.id = ((String) in.readValue((String.class.getClassLoader())));
-        this.name = ((String) in.readValue((String.class.getClassLoader())));
-        this.category = ((String) in.readValue((String.class.getClassLoader())));
-        this.icon = ((String) in.readValue((String.class.getClassLoader())));
-        this.link = ((String) in.readValue((String.class.getClassLoader())));
-    }
 
     @JsonProperty("id")
     public String getId() {
@@ -89,16 +92,17 @@ public class Channel implements Parcelable {
         this.link = link;
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(id);
-        dest.writeValue(name);
-        dest.writeValue(category);
-        dest.writeValue(icon);
-        dest.writeValue(link);
-    }
-
+    @Override
     public int describeContents() {
         return 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(category);
+        parcel.writeString(icon);
+        parcel.writeString(link);
+    }
 }

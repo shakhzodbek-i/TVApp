@@ -9,11 +9,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.data.Constants;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     private RecyclerView mChannelsRecyclerView;
     private MainPresenter mPresenter;
     private ChannelsAdapter mAdapter;
+    private ProgressBar mProgressBar;
 
     @Inject
     ChannelRepository mRepository;
@@ -54,7 +57,9 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         mChannelsRecyclerView = findViewById(R.id.tvList);
 
-        mChannelsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mProgressBar = findViewById(R.id.main_progress);
+
+        mChannelsRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
         mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
     }
@@ -74,6 +79,16 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         intent.putExtra(Constants.CHANNEL_INDEX_EXTRA_KEY, channelList.indexOf(channel));
 
         startActivity(intent);
+    }
+
+    @Override
+    public void showProgressBar() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void initNavigationView() {
@@ -108,9 +123,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_profile:
-                startActivity(new Intent(this, ProfileActivity.class));
-                break;
             case R.id.nav_off_ads:
                 break;
             case R.id.nav_rate:
@@ -135,4 +147,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }

@@ -62,6 +62,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
 
             Glide.with(itemView)
                     .load(channel.getLink())
+                    .placeholder(R.drawable.no_tv_icon)
                     .into(channelImg);
         }
     }

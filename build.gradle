@@ -36,9 +36,6 @@ ext {
     daggerVersion = "2.16"
     retrofitVersion = "2.4.0"
     glideVersion = "4.9.0"
-    rxJavaVersion = "2.2.3"
-    rxAndroidVersion = "2.1.0"
-    rxJavaCallAdapterVersion = "2.4.0"
 
     junitVersion = "4.12"
     runnerVersion = "1.0.2"

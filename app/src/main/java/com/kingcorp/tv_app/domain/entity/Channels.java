@@ -11,32 +11,33 @@ public class Channels implements Parcelable
 {
     @JsonProperty("channels")
     public List<Channel> channels = null;
-    public final static Parcelable.Creator<Channels> CREATOR = new Creator<Channels>() {
-
-        public Channels createFromParcel(Parcel in) {
-            return new Channels(in);
-        }
-
-        public Channels[] newArray(int size) {
-            return (new Channels[size]);
-        }
-
-    }
-            ;
-
-    protected Channels(Parcel in) {
-        in.readList(this.channels, (Channel.class.getClassLoader()));
-    }
 
     public Channels() {
     }
 
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(channels);
+    protected Channels(Parcel in) {
+        channels = in.createTypedArrayList(Channel.CREATOR);
     }
 
+    public static final Creator<Channels> CREATOR = new Creator<Channels>() {
+        @Override
+        public Channels createFromParcel(Parcel in) {
+            return new Channels(in);
+        }
+
+        @Override
+        public Channels[] newArray(int size) {
+            return new Channels[size];
+        }
+    };
+
+    @Override
     public int describeContents() {
         return 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeTypedList(channels);
+    }
 }

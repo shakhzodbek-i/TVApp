@@ -1,24 +1,26 @@
 package com.kingcorp.tv_app.presentation.presenter;
 
+import android.support.annotation.NonNull;
+
 import com.kingcorp.tv_app.data.Constants;
 import com.kingcorp.tv_app.data.SharedPreferencesHelper;
 import com.kingcorp.tv_app.domain.entity.Channel;
+import com.kingcorp.tv_app.domain.entity.Channels;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.view.MainView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainPresenterImpl implements MainPresenter {
 
     private final MainView mView;
     private final ChannelRepository mRepository;
     private final SharedPreferencesHelper mSharedPreferencesHelper;
-    private final CompositeDisposable mCompositeDisposable;
 
     private String mRegion;
     private List<Channel> mChannelsList;
@@ -27,7 +29,6 @@ public class MainPresenterImpl implements MainPresenter {
         this.mView = mView;
         this.mRepository = repository;
         this.mSharedPreferencesHelper = sharedPreferencesHelper;
-        this.mCompositeDisposable = new CompositeDisposable();
 
         mRegion = mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY) == null
                 ? "ru"
@@ -37,21 +38,23 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void loadChannels() {
+        mView.showProgressBar();
+        mRepository.loadChannels(mRegion)
+                .enqueue(new Callback<Channels>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Channels> call, @NonNull Response<Channels> response) {
+                        if (response.body() != null) {
+                            mChannelsList = response.body().channels;
+                        }
+                        mView.showChannels(mChannelsList);
+                        mView.hideProgressBar();
+                    }
 
-        mCompositeDisposable.add(
-                mRepository.loadChannels(mRegion)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                response -> {
-                                    mChannelsList = response.channels;
-                                    mView.showChannels(mChannelsList);
-                                },
-                                Throwable::printStackTrace
-                        )
-        );
-
-
+                    @Override
+                    public void onFailure(@NonNull Call<Channels> call, @NonNull Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
     }
 
     @Override

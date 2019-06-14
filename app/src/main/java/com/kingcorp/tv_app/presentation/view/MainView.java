@@ -9,4 +9,8 @@ public interface MainView {
     void showChannels(List<Channel> channels);
 
     void openChannel(Channel channel, ArrayList<Channel> channels);
+
+    void showProgressBar();
+
+    void hideProgressBar();
 }

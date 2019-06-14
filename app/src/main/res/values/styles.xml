@@ -24,7 +24,7 @@
     </style>
 
     <style name="MyRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
-        <item name="colorAccent">@color/colorSecondAccent</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">

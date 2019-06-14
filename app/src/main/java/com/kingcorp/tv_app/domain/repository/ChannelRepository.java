@@ -2,8 +2,8 @@ package com.kingcorp.tv_app.domain.repository;
 
 import com.kingcorp.tv_app.domain.entity.Channels;
 
-import io.reactivex.Observable;
+import retrofit2.Call;
 
 public interface ChannelRepository {
-    Observable<Channels> loadChannels(String region);
+    Call<Channels> loadChannels(String region);
 }

@@ -25,8 +25,6 @@ public class PlayerPresenterImpl
     private PlayerView mView;
     private boolean mIsMute = false;
 
-//    private final String testUrl = "http://persik.tv/stream/9557/401338/46.m3u8";
-//    private final String testNextUrl = "http://video-4-206.rutube.ru/stream/10113616/546602986e6a424d74d594876ddb3f04/tracks-v1a1/mono.m3u8";
 
     public PlayerPresenterImpl(PlayerView view, SurfaceHolder holder, List<Channel> channelsList, int currentChannelIndex) {
         this.mView = view;
@@ -68,6 +66,7 @@ public class PlayerPresenterImpl
     public void changeChannel(String url) {
         mView.showProgressBar();
         try {
+            mPlayer.stop();
             mPlayer.reset();
             mPlayer.setDataSource(url);
             mPlayer.prepareAsync();
@@ -98,6 +97,7 @@ public class PlayerPresenterImpl
     @Override
     public void loadMediaPlayer() {
         if (mPlayer == null) {
+            mView.setChannelMetadata(mCurrentChannel);
             mView.showProgressBar();
             mPlayer = new MediaPlayer();
             mPlayer.setDisplay(mHolder);

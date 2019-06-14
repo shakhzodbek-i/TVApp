@@ -123,9 +123,9 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
     @Override
     public void setMuteButtonIcon(boolean isMute) {
         if (isMute)
-            mMuteBtn.setImageResource(R.drawable.ic_unmute_btn);
-        else
             mMuteBtn.setImageResource(R.drawable.ic_mute_btn);
+        else
+            mMuteBtn.setImageResource(R.drawable.ic_unmute_btn);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
         Glide
                 .with(this)
                 .load(Uri.parse(entity.getIcon()))
-                .placeholder(R.mipmap.ic_launcher_foreground)
+                .placeholder(R.drawable.no_tv_icon)
                 .into(mChannelIcon);
 
         mChannelName.setText(entity.getName());
