@@ -3,6 +3,7 @@ package com.kingcorp.tv_app;
 import android.app.Activity;
 import android.app.Application;
 
+import com.google.android.gms.ads.MobileAds;
 import com.kingcorp.tv_app.di.DaggerAppComponent;
 
 import javax.inject.Inject;
@@ -19,6 +20,8 @@ public class App extends Application implements HasActivityInjector {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        MobileAds.initialize(this.getApplicationContext(), getString(R.string.admob_application_id));
 
         DaggerAppComponent
                 .builder()

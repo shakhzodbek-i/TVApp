@@ -16,6 +16,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_application_id"/>
+
         <activity
             android:name=".presentation.view.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,10 +32,6 @@
         </activity>
 
         <activity android:name=".presentation.view.SplashActivity" />
-
-        <activity
-            android:name=".presentation.view.ProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".presentation.view.PlayerActivity"

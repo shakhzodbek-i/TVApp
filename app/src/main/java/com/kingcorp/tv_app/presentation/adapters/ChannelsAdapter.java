@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.domain.entity.Channel;
-import com.kingcorp.tv_app.presentation.listener.MainActivityListener;
+import com.kingcorp.tv_app.presentation.listeners.MainActivityListener;
 
 import java.util.List;
 

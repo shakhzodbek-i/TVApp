@@ -36,6 +36,7 @@ ext {
     daggerVersion = "2.16"
     retrofitVersion = "2.4.0"
     glideVersion = "4.9.0"
+    adVersion = "17.2.1"
 
     junitVersion = "4.12"
     runnerVersion = "1.0.2"

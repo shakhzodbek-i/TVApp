@@ -16,8 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+            <Spinner
+                android:id="@+id/region_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:dropDownSelector="@color/colorAccent"
+                android:spinnerMode="dropdown" />
+        </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />

@@ -13,11 +13,18 @@
     <string name="nav_rate_us">Rate us</string>
     <string name="nav_privacy">Privacy policy</string>
     <string name="nav_about" >About us</string>
+    <string name="current_region_text">Current region:</string>
+
 
     <string-array name="locations">
         <item>Russia</item>
+        <item>Belarus</item>
         <item>Kazakhstan</item>
-        <item >Kyrgyzstan</item>
+        <item>Ukraine</item>
         <item>Uzbekistan</item>
     </string-array>
+
+    <string name="admob_application_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_banner_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_inter_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

@@ -13,4 +13,6 @@ public interface MainView {
     void showProgressBar();
 
     void hideProgressBar();
+
+    void showMessage(String msg);
 }

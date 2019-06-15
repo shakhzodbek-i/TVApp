@@ -7,7 +7,6 @@ import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Module
@@ -18,7 +17,6 @@ public class MainActivityModule {
     ChannelApi provideChannelApi(){
         return new Retrofit.Builder()
                 .baseUrl("http://wwiptv.ru")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build()
                 .create(ChannelApi.class);

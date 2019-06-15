@@ -18,4 +18,6 @@ public interface PlayerView {
     void setChannelMetadata(Channel entity);
 
     AudioManager getAudioManager();
+
+    void showAd();
 }

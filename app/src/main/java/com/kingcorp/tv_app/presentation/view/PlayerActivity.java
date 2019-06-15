@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -19,6 +20,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.data.Constants;
 import com.kingcorp.tv_app.domain.entity.Channel;
@@ -45,6 +49,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
     private PlayerPresenter mPresenter;
     private ArrayList<Channel> mChannelsList;
     private int mCurrentChannelIndex;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +81,11 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
         super.onDestroy();
         mPresenter.releaseMediaPlayer();
         mSurfaceHolder = null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void initViews(){
@@ -110,6 +120,15 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
 
         mVideoContainer.setOnClickListener(view -> mPresenter.onSurfaceClick(mControlPanel));
 
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
     }
 
     @Override
@@ -165,5 +184,14 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
     @Override
     public AudioManager getAudioManager() {
         return (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    @Override
+    public void showAd() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("AD_TAG", "The interstitial wasn't loaded yet.");
+        }
     }
 }

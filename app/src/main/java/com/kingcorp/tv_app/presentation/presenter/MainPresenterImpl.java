@@ -29,16 +29,23 @@ public class MainPresenterImpl implements MainPresenter {
         this.mView = mView;
         this.mRepository = repository;
         this.mSharedPreferencesHelper = sharedPreferencesHelper;
-
-        mRegion = mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY) == null
-                ? "ru"
-                : mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY);
         loadChannels();
     }
 
     @Override
     public void loadChannels() {
         mView.showProgressBar();
+
+        mRegion = mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY) == null
+                ? "ru"
+                : mSharedPreferencesHelper.getString(Constants.REGION_PREFERENCE_KEY);
+
+        // TODO: DELETE AFTER TEST
+        if (!mRegion.equals("ru")) {
+            mView.showMessage("Selected region: " + mRegion);
+            return;
+        }
+
         mRepository.loadChannels(mRegion)
                 .enqueue(new Callback<Channels>() {
                     @Override
@@ -61,4 +68,34 @@ public class MainPresenterImpl implements MainPresenter {
     public void onChannelClick(Channel currentChannel) {
         mView.openChannel(currentChannel, new ArrayList<>(mChannelsList));
     }
+
+    @Override
+    public void onRegionChanged(int selectedItemId) {
+
+        switch (selectedItemId) {
+            case 0:
+                mRegion = "ru";
+                break;
+            case 1:
+                mRegion = "by";
+                break;
+            case 2:
+                mRegion = "kz";
+                break;
+            case 3:
+                mRegion = "ua";
+                break;
+            case 4:
+                mRegion = "uz";
+                break;
+            default:
+                mRegion = "ru";
+        }
+
+        mSharedPreferencesHelper.saveString(mRegion, Constants.REGION_PREFERENCE_KEY);
+
+        loadChannels();
+    }
+
+
 }

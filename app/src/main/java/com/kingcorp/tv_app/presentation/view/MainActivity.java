@@ -12,17 +12,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.kingcorp.tv_app.R;
 import com.kingcorp.tv_app.data.Constants;
 import com.kingcorp.tv_app.data.SharedPreferencesHelper;
 import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.adapters.ChannelsAdapter;
+import com.kingcorp.tv_app.presentation.adapters.RegionSpinnerAdapter;
 import com.kingcorp.tv_app.presentation.presenter.MainPresenter;
 import com.kingcorp.tv_app.presentation.presenter.MainPresenterImpl;
 
@@ -39,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     private MainPresenter mPresenter;
     private ChannelsAdapter mAdapter;
     private ProgressBar mProgressBar;
+    private AdView mAdViewBanner;
+    private Spinner mRegionSpinner;
+    private InterstitialAd mInterstitialAd;
+
 
     @Inject
     ChannelRepository mRepository;
@@ -53,13 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         setContentView(R.layout.activity_main);
 
-        initNavigationView();
-
-        mChannelsRecyclerView = findViewById(R.id.tvList);
-
-        mProgressBar = findViewById(R.id.main_progress);
-
-        mChannelsRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        initView();
 
         mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
     }
@@ -91,11 +98,12 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         mProgressBar.setVisibility(View.GONE);
     }
 
-    private void initNavigationView() {
+    private void initView() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -106,6 +114,46 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mAdViewBanner = findViewById(R.id.adView);
+        mAdViewBanner.loadAd(new AdRequest.Builder().build());
+
+        mChannelsRecyclerView = findViewById(R.id.tvList);
+
+        mProgressBar = findViewById(R.id.main_progress);
+
+        mChannelsRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
+        mRegionSpinner = findViewById(R.id.region_spinner);
+
+        RegionSpinnerAdapter adapter = new RegionSpinnerAdapter(
+                this,
+                R.layout.item_region_spinner_main,
+                getResources().getStringArray(R.array.locations)
+        );
+
+        mRegionSpinner.setAdapter(adapter);
+
+        mRegionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mPresenter.onRegionChanged(mRegionSpinner.getSelectedItemPosition());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
     }
 
     @Override
@@ -126,8 +174,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             case R.id.nav_off_ads:
                 break;
             case R.id.nav_rate:
-                // TODO: Add app URI
-                Uri appUri = null;
+                Uri appUri = Uri.parse(Constants.APP_PLAY_MARKET_URL);
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, appUri);
                 goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
                         (Build.VERSION.SDK_INT >= 21
@@ -148,5 +195,22 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         return true;
     }
 
+    @Override
+    public void showMessage(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showAd();
+    }
+
+    private void showAd(){
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("AD_TAG", "The interstitial wasn't loaded yet.");
+        }
+    }
 }
