@@ -3,7 +3,7 @@ package com.kingcorp.tv_app.di;
 import android.content.Context;
 
 import com.kingcorp.tv_app.App;
-import com.kingcorp.tv_app.data.SharedPreferencesHelper;
+import com.kingcorp.tv_app.data.utility.SharedPreferencesHelper;
 
 import javax.inject.Singleton;
 

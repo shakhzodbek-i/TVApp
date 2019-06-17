@@ -61,7 +61,7 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
             channelName.setText(channel.getName());
 
             Glide.with(itemView)
-                    .load(channel.getLink())
+                    .load(channel.getIcon())
                     .placeholder(R.drawable.no_tv_icon)
                     .into(channelImg);
         }

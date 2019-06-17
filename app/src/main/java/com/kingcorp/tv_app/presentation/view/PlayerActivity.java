@@ -24,7 +24,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.kingcorp.tv_app.R;
-import com.kingcorp.tv_app.data.Constants;
+import com.kingcorp.tv_app.data.utility.Constants;
 import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.presentation.presenter.PlayerPresenter;
 import com.kingcorp.tv_app.presentation.presenter.PlayerPresenterImpl;

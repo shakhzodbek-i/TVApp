@@ -27,4 +27,10 @@
     <string name="admob_application_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="admob_banner_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="admob_inter_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="appmetrica_api_key">e2e99678–4fa7–41b2-adfc-59c5ef4e1cc5</string>
+
+
+    <string name="subs_btn_text_own">Own</string>
+    <string name="subs_btn_text_buy">Buy</string>
+    <string name="subs_btn_text_change">Change</string>
 </resources>

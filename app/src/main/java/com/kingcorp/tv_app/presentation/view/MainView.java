@@ -15,4 +15,8 @@ public interface MainView {
     void hideProgressBar();
 
     void showMessage(String msg);
+
+    void onBillingManagerSetupFinished();
+
+    void refreshAdsState(boolean adsState);
 }

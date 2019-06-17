@@ -5,6 +5,8 @@ import android.app.Application;
 
 import com.google.android.gms.ads.MobileAds;
 import com.kingcorp.tv_app.di.DaggerAppComponent;
+import com.yandex.metrica.YandexMetrica;
+import com.yandex.metrica.YandexMetricaConfig;
 
 import javax.inject.Inject;
 
@@ -20,6 +22,13 @@ public class App extends Application implements HasActivityInjector {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Creating an extended library configuration.
+        YandexMetricaConfig config = YandexMetricaConfig.newConfigBuilder(getString(R.string.appmetrica_api_key)).build();
+        // Initializing the AppMetrica SDK.
+        YandexMetrica.activate(getApplicationContext(), config);
+        // Automatic tracking of user activity.
+        YandexMetrica.enableActivityAutoTracking(this);
 
         MobileAds.initialize(this.getApplicationContext(), getString(R.string.admob_application_id));
 

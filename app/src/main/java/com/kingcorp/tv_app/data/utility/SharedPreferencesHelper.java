@@ -1,4 +1,4 @@
-package com.kingcorp.tv_app.data;
+package com.kingcorp.tv_app.data.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,11 +30,23 @@ public class SharedPreferencesHelper {
 
     }
 
+    public void saveBoolean(boolean value, String key) {
+        sharedPreferences
+                .edit()
+                .putBoolean(key, value)
+                .apply();
+
+    }
+
     public String getString(String key) {
         return  sharedPreferences.getString(key, null);
     }
 
     public int getInt(String key) {
         return sharedPreferences.getInt(key, -1);
+    }
+
+    public boolean getBoolean(String key, boolean defaultVal) {
+        return sharedPreferences.getBoolean(key, defaultVal);
     }
 }

@@ -26,8 +26,10 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.kingcorp.tv_app.R;
-import com.kingcorp.tv_app.data.Constants;
-import com.kingcorp.tv_app.data.SharedPreferencesHelper;
+import com.kingcorp.tv_app.data.billing.BillingManager;
+import com.kingcorp.tv_app.data.billing.BillingProvider;
+import com.kingcorp.tv_app.data.utility.Constants;
+import com.kingcorp.tv_app.data.utility.SharedPreferencesHelper;
 import com.kingcorp.tv_app.domain.entity.Channel;
 import com.kingcorp.tv_app.domain.repository.ChannelRepository;
 import com.kingcorp.tv_app.presentation.adapters.ChannelsAdapter;
@@ -42,7 +44,12 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class MainActivity extends AppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
+import static com.kingcorp.tv_app.data.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED;
+
+public class MainActivity extends AppCompatActivity
+        implements MainView, NavigationView.OnNavigationItemSelectedListener, BillingProvider {
+
+    private static final String DIALOG_TAG = "dialog";
 
     private RecyclerView mChannelsRecyclerView;
     private MainPresenter mPresenter;
@@ -52,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
     private Spinner mRegionSpinner;
     private InterstitialAd mInterstitialAd;
 
+    private BillingManager mBillingManager;
+    private BillingDialog mBillingDialog;
+    private boolean mIsAdShow;
+    private String mCurrentSubs;
 
     @Inject
     ChannelRepository mRepository;
@@ -66,9 +77,18 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         setContentView(R.layout.activity_main);
 
+        mIsAdShow = mSharedPreferencesHelper.getBoolean(Constants.AD_STATE_KEY, true);
+        mCurrentSubs = mSharedPreferencesHelper.getString(Constants.CURRENT_SUBS_KEY);
         initView();
 
         mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
+
+        if (savedInstanceState != null) {
+            mBillingDialog = (BillingDialog) getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+        }
+
+        mBillingManager = new BillingManager(this, mPresenter.getUpdateListener());
+
     }
 
     @Override
@@ -115,9 +135,6 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mAdViewBanner = findViewById(R.id.adView);
-        mAdViewBanner.loadAd(new AdRequest.Builder().build());
-
         mChannelsRecyclerView = findViewById(R.id.tvList);
 
         mProgressBar = findViewById(R.id.main_progress);
@@ -145,15 +162,24 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
             }
         });
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener(){
-            @Override
-            public void onAdClosed() {
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-        });
+        initAd();
+    }
+
+    private void initAd() {
+        if (mIsAdShow) {
+            mAdViewBanner = findViewById(R.id.adView);
+            mAdViewBanner.setVisibility(View.VISIBLE);
+            mAdViewBanner.loadAd(new AdRequest.Builder().build());
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            mInterstitialAd.setAdListener(new AdListener(){
+                @Override
+                public void onAdClosed() {
+                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                }
+            });
+        }
     }
 
     @Override
@@ -172,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
 
         switch (id) {
             case R.id.nav_off_ads:
+                onAdOffButtonPressed();
                 break;
             case R.id.nav_rate:
                 Uri appUri = Uri.parse(Constants.APP_PLAY_MARKET_URL);
@@ -195,6 +222,27 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         return true;
     }
 
+    public void onAdOffButtonPressed() {
+
+        if (mBillingDialog == null) {
+            Bundle args = new Bundle();
+            args.putString(Constants.CURRENT_SUBS_KEY, mCurrentSubs);
+
+            mBillingDialog = new BillingDialog();
+            mBillingDialog.setArguments(args);
+        }
+
+        if (!isBillingDialogShown()) {
+            mBillingDialog.show(getSupportFragmentManager(), DIALOG_TAG);
+
+            if (mBillingManager != null
+                    && mBillingManager.getBillingClientResponseCode()
+                    > BILLING_MANAGER_NOT_INITIALIZED) {
+                mBillingDialog.onManagerReady(this);
+            }
+        }
+    }
+
     @Override
     public void showMessage(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
@@ -206,11 +254,52 @@ public class MainActivity extends AppCompatActivity implements MainView, Navigat
         showAd();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void showAd(){
-        if (mInterstitialAd.isLoaded()) {
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
             Log.d("AD_TAG", "The interstitial wasn't loaded yet.");
+        }
+    }
+
+    @Override
+    public void onBillingManagerSetupFinished() {
+        if (mBillingDialog != null) {
+            mBillingDialog.onManagerReady(this);
+        }
+    }
+
+    @Override
+    public BillingManager getBillingManager() {
+        return mBillingManager;
+    }
+
+    @Override
+    public boolean isSubscribed() {
+        return mPresenter.isSubscribed();
+    }
+
+    @Override
+    public boolean isAdExist() {
+        return mIsAdShow;
+    }
+
+    public boolean isBillingDialogShown() {
+        return mBillingDialog != null && mBillingDialog.isVisible();
+    }
+
+    @Override
+    public void refreshAdsState(boolean adsState) {
+        if (adsState && mAdViewBanner != null && mInterstitialAd != null) {
+            mAdViewBanner.setVisibility(View.GONE);
+            mInterstitialAd = null;
+            mIsAdShow = false;
+            recreate();
         }
     }
 }
