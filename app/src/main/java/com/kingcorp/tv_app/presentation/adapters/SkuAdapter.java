@@ -16,17 +16,13 @@ import java.util.List;
 
 public class SkuAdapter extends RecyclerView.Adapter<SkuAdapter.SkuViewHolder> {
     private List<Sku> mSkuList;
-    private OnSubscriptionSelectedListener mListener;
+    private OnSubscriptionListener mListener;
     private boolean mIsSubscriptionExist;
 
-    public SkuAdapter(OnSubscriptionSelectedListener mListener, boolean isSubscriptionExist) {
+    public SkuAdapter(OnSubscriptionListener mListener, boolean isSubscriptionExist, List<Sku> skuList) {
+        this.mSkuList = skuList;
         this.mListener = mListener;
         this.mIsSubscriptionExist = isSubscriptionExist;
-    }
-
-    public void updateData(List<Sku> skuList) {
-        this.mSkuList = skuList;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -52,29 +48,37 @@ public class SkuAdapter extends RecyclerView.Adapter<SkuAdapter.SkuViewHolder> {
 
         TextView subsText;
         Button subsBtn;
+        TextView subsPrice;
+        TextView subsCancel;
 
         SkuViewHolder(@NonNull View itemView) {
             super(itemView);
             subsText = itemView.findViewById(R.id.subs_text);
             subsBtn = itemView.findViewById(R.id.subs_btn);
-
+            subsPrice = itemView.findViewById(R.id.subs_price);
+            subsCancel = itemView.findViewById(R.id.subs_cancel);
         }
 
         void bind(Sku sku) {
-            String text = sku.getTitle() + " / " + sku.getPrice();
-            subsText.setText(text);
+            subsText.setText(sku.getTitle());
+            subsPrice.setText(sku.getPrice());
 
-            if (sku.isSubscribed())
+            if (sku.isSubscribed()) {
                 subsBtn.setText(R.string.subs_btn_text_own);
+                subsCancel.setVisibility(View.VISIBLE);
+            }
             else {
                 @StringRes int btnText = mIsSubscriptionExist ? R.string.subs_btn_text_change : R.string.subs_btn_text_buy;
                 subsBtn.setText(btnText);
             }
-            subsBtn.setOnClickListener(view -> mListener.onSubscriptionSelected(sku));
+            subsBtn.setOnClickListener(view -> mListener.onSubscriptionBuy(sku));
+            subsCancel.setOnClickListener(view -> mListener.onSubscriptionCancel(sku));
         }
     }
 
-    public interface OnSubscriptionSelectedListener {
-        void onSubscriptionSelected(Sku selectedSku);
+    public interface OnSubscriptionListener {
+        void onSubscriptionBuy(Sku selectedSku);
+
+        void onSubscriptionCancel(Sku selectedSku);
     }
 }

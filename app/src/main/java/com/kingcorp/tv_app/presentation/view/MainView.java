@@ -19,4 +19,6 @@ public interface MainView {
     void onBillingManagerSetupFinished();
 
     void refreshAdsState(boolean adsState);
+
+    void showNoInternetConnection();
 }

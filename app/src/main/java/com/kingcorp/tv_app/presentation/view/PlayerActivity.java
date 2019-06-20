@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -50,6 +51,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
     private ArrayList<Channel> mChannelsList;
     private int mCurrentChannelIndex;
     private InterstitialAd mInterstitialAd;
+    private boolean mIsAdOn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
 
         mChannelsList = getIntent().getParcelableArrayListExtra(Constants.CHANNEL_LIST_EXTRA_KEY);
         mCurrentChannelIndex = getIntent().getIntExtra(Constants.CHANNEL_INDEX_EXTRA_KEY, -1);
+        mIsAdOn = getIntent().getBooleanExtra(Constants.AD_STATE_KEY, true);
 
         initViews();
 
@@ -81,11 +84,6 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
         super.onDestroy();
         mPresenter.releaseMediaPlayer();
         mSurfaceHolder = null;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     private void initViews(){
@@ -120,15 +118,21 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
 
         mVideoContainer.setOnClickListener(view -> mPresenter.onSurfaceClick(mControlPanel));
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener(){
-            @Override
-            public void onAdClosed() {
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-        });
+        initAd();
+    }
+
+    private void initAd() {
+        if (mIsAdOn) {
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id_test));
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            mInterstitialAd.setAdListener(new AdListener(){
+                @Override
+                public void onAdClosed() {
+                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                }
+            });
+        }
     }
 
     @Override
@@ -179,6 +183,7 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
                 .into(mChannelIcon);
 
         mChannelName.setText(entity.getName());
+        new Handler().postDelayed(() -> mControlPanel.setVisibility(View.GONE), 3000);
     }
 
     @Override
@@ -193,5 +198,10 @@ public class PlayerActivity extends AppCompatActivity implements PlayerView{
         } else {
             Log.d("AD_TAG", "The interstitial wasn't loaded yet.");
         }
+    }
+
+    @Override
+    public boolean isAdOn() {
+        return mIsAdOn;
     }
 }

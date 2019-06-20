@@ -20,4 +20,6 @@ public interface PlayerView {
     AudioManager getAudioManager();
 
     void showAd();
+
+    boolean isAdOn();
 }

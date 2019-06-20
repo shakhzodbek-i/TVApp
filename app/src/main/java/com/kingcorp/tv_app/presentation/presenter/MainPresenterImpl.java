@@ -2,7 +2,6 @@ package com.kingcorp.tv_app.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
-import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.Purchase;
 import com.kingcorp.tv_app.data.billing.BillingConstants;
 import com.kingcorp.tv_app.data.billing.BillingManager;
@@ -29,10 +28,7 @@ public class MainPresenterImpl implements MainPresenter {
     private String mRegion;
     private List<Channel> mChannelsList;
 
-    private boolean mMonthly;
-    private boolean mThreeMonth;
-    private boolean mSixMonth;
-    private boolean mYearly;
+    private boolean mIsSubscribed;
 
     public MainPresenterImpl(MainView mView, ChannelRepository repository, SharedPreferencesHelper sharedPreferencesHelper) {
         this.mView = mView;
@@ -68,7 +64,7 @@ public class MainPresenterImpl implements MainPresenter {
 
                     @Override
                     public void onFailure(@NonNull Call<Channels> call, @NonNull Throwable t) {
-                        t.printStackTrace();
+                        mView.showNoInternetConnection();
                     }
                 });
     }
@@ -107,6 +103,8 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
 
+    //TODO: EXTRACT ALL IN-APP BILLING THINGS TO BILLING HANDLER
+
     public class UpdateListener implements BillingManager.BillingUpdatesListener {
         @Override
         public void onBillingClientSetupFinished() {
@@ -114,45 +112,42 @@ public class MainPresenterImpl implements MainPresenter {
         }
 
         @Override
-        public void onConsumeFinished(String token, @BillingClient.BillingResponse int result) {
-        }
-
-        @Override
         public void onPurchasesUpdated(List<Purchase> purchaseList) {
-            mMonthly = false;
-            mThreeMonth = false;
-            mSixMonth = false;
-            mYearly = false;
+            mIsSubscribed = false;
+            String currentSubs = null;
 
             for (Purchase purchase : purchaseList) {
+
                 switch (purchase.getSku()) {
                     case BillingConstants.SKU_MONTHLY:
-                        mMonthly = true;
+                        mIsSubscribed = true;
+                        currentSubs = BillingConstants.SKU_MONTHLY;
                         break;
                     case BillingConstants.SKU_THREE_MONTH:
-                        mThreeMonth = true;
+                        mIsSubscribed = true;
+                        currentSubs = BillingConstants.SKU_THREE_MONTH;
                         break;
                     case BillingConstants.SKU_SIX_MONTH:
-                        mSixMonth = true;
+                        mIsSubscribed = true;
+                        currentSubs = BillingConstants.SKU_SIX_MONTH;
                         break;
                     case BillingConstants.SKU_YEARLY:
-                        mYearly = true;
+                        mIsSubscribed = true;
+                        currentSubs = BillingConstants.SKU_YEARLY;
                         break;
                 }
             }
 
-            if(mMonthly || mThreeMonth || mSixMonth || mYearly)
-                mSharedPreferencesHelper.saveBoolean(false, Constants.AD_STATE_KEY);
-            else
-                mSharedPreferencesHelper.saveBoolean(true, Constants.AD_STATE_KEY);
+            mSharedPreferencesHelper.saveBoolean(!mIsSubscribed, Constants.AD_STATE_KEY);
+            mSharedPreferencesHelper.saveString(currentSubs, Constants.CURRENT_SUBS_KEY);
 
-            mView.refreshAdsState(mMonthly || mThreeMonth || mSixMonth || mYearly);
+            mView.refreshAdsState(mIsSubscribed);
         }
     }
 
     @Override
     public boolean isSubscribed() {
-        return mMonthly || mThreeMonth || mSixMonth || mYearly;
+        return mIsSubscribed;
     }
 
     @Override

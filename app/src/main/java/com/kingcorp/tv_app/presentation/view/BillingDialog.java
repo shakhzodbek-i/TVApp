@@ -1,5 +1,7 @@
 package com.kingcorp.tv_app.presentation.view;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.SkuDetails;
@@ -23,16 +27,20 @@ import com.kingcorp.tv_app.presentation.adapters.SkuAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscriptionSelectedListener {
+public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscriptionListener {
 
     private RecyclerView mRecyclerView;
     private SkuAdapter mAdapter;
     private BillingProvider mBillingProvider;
     private String mCurrentSubs;
+    private ProgressBar mProgressBar;
+    private TextView mTitle;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(STYLE_NORMAL, R.style.AppTheme);
+
         if (getArguments() != null) {
             mCurrentSubs = getArguments().getString(Constants.CURRENT_SUBS_KEY);
         }
@@ -44,7 +52,8 @@ public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscr
 
         View root = inflater.inflate(R.layout.billing_dialog, container, false);
         mRecyclerView = root.findViewById(R.id.sku_recycler);
-
+        mProgressBar = root.findViewById(R.id.dialog_progress);
+        mTitle = root.findViewById(R.id.dialog_title);
         if (mBillingProvider != null) {
             querySkuDetails();
         }
@@ -52,9 +61,7 @@ public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscr
     }
 
     private void querySkuDetails() {
-        boolean isCurrentSubsExist = mCurrentSubs == null;
-
-        mAdapter = new SkuAdapter( this, isCurrentSubsExist);
+        showProgress();
 
         if (getActivity() != null && !getActivity().isFinishing()) {
             final List<Sku> dataList = new ArrayList<>();
@@ -87,18 +94,19 @@ public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscr
 
                                 if (dataList.size() != 0) {
                                     if (mRecyclerView.getAdapter() == null) {
+                                        boolean isCurrentSubsExist = mCurrentSubs != null;
+                                        mAdapter = new SkuAdapter(BillingDialog.this, isCurrentSubsExist, dataList);
                                         mRecyclerView.setAdapter(mAdapter);
                                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                                     }
-                                    mAdapter.updateData(dataList);
                                 }
-
+                                hideProgress();
                             }
                         });
     }
 
     @Override
-    public void onSubscriptionSelected(Sku data) {
+    public void onSubscriptionBuy(Sku data) {
         if (data != null) {
             if (mBillingProvider.isSubscribed()) {
                 ArrayList<String> currentSubscriptionSku = new ArrayList<>();
@@ -110,5 +118,27 @@ public class BillingDialog extends DialogFragment implements SkuAdapter.OnSubscr
                         BillingClient.SkuType.SUBS);
             }
         }
+    }
+
+    @Override
+    public void onSubscriptionCancel(Sku selectedSku) {
+        Intent subscriptionsPage = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(
+                        "https://play.google.com/store/account/subscriptions?sku="
+                        + selectedSku.getSku()
+                        + "&package="
+                        + Constants.APP_PACKAGE
+                ));
+        startActivity(subscriptionsPage);
+    }
+
+    private void showProgress() {
+        mTitle.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgress() {
+        mTitle.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 }

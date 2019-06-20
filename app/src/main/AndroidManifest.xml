@@ -18,24 +18,25 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/admob_application_id"/>
+            android:value="@string/admob_application_id_test"/>
 
         <activity
             android:name=".presentation.view.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
 
+        <activity android:name=".presentation.view.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name=".presentation.view.SplashActivity" />
 
         <activity
             android:name=".presentation.view.PlayerActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="landscape"/>
 
     </application>
 

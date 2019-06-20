@@ -16,10 +16,7 @@
             android:id="@+id/nav_policy"
             android:icon="@drawable/nav_privacy"
             android:title="@string/nav_privacy" />
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/nav_about"
-            android:title="@string/nav_about" />
+
     </group>
 
 </menu>

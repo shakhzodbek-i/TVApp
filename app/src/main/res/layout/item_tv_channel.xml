@@ -3,6 +3,7 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp">
     <LinearLayout
@@ -25,7 +26,7 @@
             android:gravity="center"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Channel name"
+            tools:text="Channel name"
             android:textColor="@android:color/white"
             android:labelFor="@id/channel_img" />
     </LinearLayout>

@@ -24,7 +24,7 @@ public class PlayerPresenterImpl
     private SurfaceHolder mHolder;
     private PlayerView mView;
     private boolean mIsMute = false;
-    private int showAdCounter = 0;
+    private int adCounter = 0;
 
 
     public PlayerPresenterImpl(PlayerView view, SurfaceHolder holder, List<Channel> channelsList, int currentChannelIndex) {
@@ -153,11 +153,7 @@ public class PlayerPresenterImpl
                     mCurrentChannel = mChannelsList.get(++mCurrentChannelIndex);
                     changeChannel(mCurrentChannel.getLink());
                     mView.setChannelMetadata(mCurrentChannel);
-                    showAdCounter++;
-
-                    if (showAdCounter % 3 == 0) {
-                        mView.showAd();
-                    }
+                    showAd();
                 }
                 break;
             case R.id.prev_btn:
@@ -165,11 +161,7 @@ public class PlayerPresenterImpl
                     mCurrentChannel = mChannelsList.get(--mCurrentChannelIndex);
                     changeChannel(mCurrentChannel.getLink());
                     mView.setChannelMetadata(mCurrentChannel);
-                    showAdCounter++;
-
-                    if (showAdCounter % 3 == 0) {
-                        mView.showAd();
-                    }
+                    showAd();
                 }
                 break;
             case R.id.play_btn:
@@ -178,6 +170,15 @@ public class PlayerPresenterImpl
             case R.id.mute_btn:
                 setMute(!mIsMute);
                 break;
+        }
+    }
+
+    private void showAd() {
+        if (mView.isAdOn()) {
+            adCounter++;
+            if (adCounter % 3 == 0) {
+                mView.showAd();
+            }
         }
     }
 
@@ -192,7 +193,7 @@ public class PlayerPresenterImpl
     private void controlPanelTimerHandler(View view){
         new Handler().postDelayed(() -> {
             view.setVisibility(View.GONE);
-        }, 5000);
+        }, 3000);
     }
 
     @Override

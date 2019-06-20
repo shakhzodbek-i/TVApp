@@ -1,21 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
         applicationId "com.kingcorp.tv_app"
-
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
-
+        minSdkVersion 19
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
@@ -27,13 +24,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     lintOptions {
         disable "GoogleAppIndexingWarning"
+    }
+    productFlavors {
     }
 }
 
 dependencies {
+
     // Support libs
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:customtabs:$rootProject.supportLibraryVersion"

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -52,16 +55,21 @@ public class MainActivity extends AppCompatActivity
     private static final String DIALOG_TAG = "dialog";
 
     private RecyclerView mChannelsRecyclerView;
+    private LinearLayout mNoConnectionView;
+    private Button mRestartBtn;
     private MainPresenter mPresenter;
     private ChannelsAdapter mAdapter;
     private ProgressBar mProgressBar;
-    private AdView mAdViewBanner;
     private Spinner mRegionSpinner;
+
+    private Parcelable mRecyclerViewState;
+
+    private AdView mAdViewBanner;
     private InterstitialAd mInterstitialAd;
 
     private BillingManager mBillingManager;
     private BillingDialog mBillingDialog;
-    private boolean mIsAdShow;
+    private boolean mIsAdOn;
     private String mCurrentSubs;
 
     @Inject
@@ -70,6 +78,7 @@ public class MainActivity extends AppCompatActivity
     @Inject
     SharedPreferencesHelper mSharedPreferencesHelper;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,18 +86,16 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-        mIsAdShow = mSharedPreferencesHelper.getBoolean(Constants.AD_STATE_KEY, true);
-        mCurrentSubs = mSharedPreferencesHelper.getString(Constants.CURRENT_SUBS_KEY);
-        initView();
-
-        mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
-
         if (savedInstanceState != null) {
             mBillingDialog = (BillingDialog) getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
         }
 
-        mBillingManager = new BillingManager(this, mPresenter.getUpdateListener());
+        mIsAdOn = mSharedPreferencesHelper.getBoolean(Constants.AD_STATE_KEY, true);
+        mCurrentSubs = mSharedPreferencesHelper.getString(Constants.CURRENT_SUBS_KEY);
 
+        initView();
+
+        mPresenter = new MainPresenterImpl(this, mRepository, mSharedPreferencesHelper);
     }
 
     @Override
@@ -104,17 +111,20 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.putParcelableArrayListExtra(Constants.CHANNEL_LIST_EXTRA_KEY, channelList);
         intent.putExtra(Constants.CHANNEL_INDEX_EXTRA_KEY, channelList.indexOf(channel));
+        intent.putExtra(Constants.AD_STATE_KEY, mIsAdOn);
 
         startActivity(intent);
     }
 
     @Override
     public void showProgressBar() {
+        mChannelsRecyclerView.setVisibility(View.INVISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgressBar() {
+        mChannelsRecyclerView.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -162,16 +172,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        mNoConnectionView = findViewById(R.id.no_connection);
+        mRestartBtn = findViewById(R.id.restart_btn);
+        mRestartBtn.setOnClickListener(view -> {
+            mNoConnectionView.setVisibility(View.GONE);
+            mPresenter.loadChannels();
+        });
         initAd();
     }
 
     private void initAd() {
-        if (mIsAdShow) {
+        if (mIsAdOn) {
             mAdViewBanner = findViewById(R.id.adView);
             mAdViewBanner.setVisibility(View.VISIBLE);
             mAdViewBanner.loadAd(new AdRequest.Builder().build());
             mInterstitialAd = new InterstitialAd(this);
-            mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id));
+            mInterstitialAd.setAdUnitId(getString(R.string.admob_inter_unit_id_test));
             mInterstitialAd.loadAd(new AdRequest.Builder().build());
             mInterstitialAd.setAdListener(new AdListener(){
                 @Override
@@ -201,20 +217,21 @@ public class MainActivity extends AppCompatActivity
                 onAdOffButtonPressed();
                 break;
             case R.id.nav_rate:
-                Uri appUri = Uri.parse(Constants.APP_PLAY_MARKET_URL);
+                Uri appUri = Uri.parse("market://details?id="+Constants.APP_PACKAGE);
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, appUri);
                 goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
                         (Build.VERSION.SDK_INT >= 21
                                 ? Intent.FLAG_ACTIVITY_NEW_DOCUMENT
                                 : Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) |
                         Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                startActivity(goToMarket);
                 break;
             case R.id.nav_policy:
-
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://sites.google.com/view/iptv-hdtv"));
+                startActivity(browserIntent);
                 break;
-            case R.id.nav_about:
 
-                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -223,6 +240,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onAdOffButtonPressed() {
+        mBillingManager = new BillingManager(this, mPresenter.getUpdateListener());
 
         if (mBillingDialog == null) {
             Bundle args = new Bundle();
@@ -236,8 +254,7 @@ public class MainActivity extends AppCompatActivity
             mBillingDialog.show(getSupportFragmentManager(), DIALOG_TAG);
 
             if (mBillingManager != null
-                    && mBillingManager.getBillingClientResponseCode()
-                    > BILLING_MANAGER_NOT_INITIALIZED) {
+                    && mBillingManager.getBillingClientResponseCode() > BILLING_MANAGER_NOT_INITIALIZED) {
                 mBillingDialog.onManagerReady(this);
             }
         }
@@ -251,12 +268,27 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
         showAd();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onSaveInstanceState(Bundle outState) {
+        mRecyclerViewState = mChannelsRecyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(Constants.CHANNEL_RECYCLER_STATE_KEY, mRecyclerViewState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mRecyclerViewState = savedInstanceState.getParcelable(Constants.CHANNEL_RECYCLER_STATE_KEY);
+
+            if (mRecyclerViewState != null)
+                mChannelsRecyclerView.getLayoutManager().onRestoreInstanceState(mRecyclerViewState);
+        }
     }
 
     private void showAd(){
@@ -286,7 +318,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean isAdExist() {
-        return mIsAdShow;
+        return mIsAdOn;
     }
 
     public boolean isBillingDialogShown() {
@@ -296,10 +328,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void refreshAdsState(boolean adsState) {
         if (adsState && mAdViewBanner != null && mInterstitialAd != null) {
-            mAdViewBanner.setVisibility(View.GONE);
-            mInterstitialAd = null;
-            mIsAdShow = false;
             recreate();
         }
+    }
+
+    @Override
+    public void showNoInternetConnection() {
+        mProgressBar.setVisibility(View.GONE);
+        mChannelsRecyclerView.setVisibility(View.INVISIBLE);
+        mNoConnectionView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBillingManager != null)
+            mBillingManager.destroy();
     }
 }
